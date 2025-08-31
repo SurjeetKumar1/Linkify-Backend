@@ -2,7 +2,7 @@
 
 <br><br>
 <p align="center">
-  <img src="https://github.com/SurjeetKumar1/Apna-AI-Backend/blob/main/assets/backend-live.png" alt="Live API Endpoint" width="75%"/>
+  <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-output.png" alt="Live API Endpoint" width="75%"/>
 </p>
 <br><br>
 
@@ -60,15 +60,18 @@ First, create and configure the cloud server.
 2.  **Security Group (Firewall):** Configure inbound rules to allow:
     -   `SSH` (Port 22) from your IP.
     -   `HTTP` (Port 80) from `Anywhere` (0.0.0.0/0).
-    -   `Custom TCP` (Port 8080 or your app's port) from `Anywhere` (0.0.0.0/0).
+    -   `Custom TCP` (Port 9090 or your app's port) from `Anywhere` (0.0.0.0/0).
 <br><br>
-    <img src="https://github.com/SurjeetKumar1/Apna-AI-Backend/raw/main/assets/ec2-machine.png" alt="EC2 Instance Configuration"/>
+    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/ec2-machine.png" alt="EC2 Instance Configuration"/>
+<br><br>
+<br><br>
+    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/port.png" alt="EC2 Instance Configuration"/>
 <br><br>
 3.  **Connect and Prepare:**
-    -   Secure your key: `chmod 400 "ApnaAI.pem"`
+    -   Secure your key: `chmod 400 "linkify.pem"`
     -   SSH into your instance:
         ```bash
-        ssh -i "ApnaAI.pem" ubuntu@ec2-54-210-6-159.compute-1.amazonaws.com
+        ssh -i "linkify.pem" ubuntu@ec2-52-90-197-220.compute-1.amazonaws.com
         ```
     -   Install necessary software:
         ```bash
@@ -102,7 +105,7 @@ Connect your EC2 instance to your GitHub repository.
     tar xzf ./actions-runner-linux-x64-2.328.0.tar.gz
 
     # Configure the runner (use the URL and token from your repo's settings)
-    ./config.sh --url [https://github.com/SurjeetKumar1/Apna-AI-Backend](https://github.com/SurjeetKumar1/Apna-AI-Backend) --token <..........>
+    ./config.sh --url [https://github.com/SurjeetKumar1/Apna-AI-Backend](https://github.com/SurjeetKumar1/Linkify-Backend) --token <..........>
 
     # Install the runner as a service to run on startup
     sudo ./svc.sh install
@@ -110,9 +113,7 @@ Connect your EC2 instance to your GitHub repository.
     # Start the runner service
     sudo ./svc.sh start
     ```
-    <br><br>
-    <img src="https://github.com/SurjeetKumar1/Apna-AI-Backend/blob/main/assets/backend-runner-command.png" alt="Runner Setup Commands"/>
-    <br><br>
+    
 
 ### **3. GitHub Actions Workflow Configuration ⚙️**
 
@@ -122,43 +123,46 @@ Create the automated deployment script.
 2.  Paste the following configuration:
 
     ```yaml
-    name: Node.js CI
+    name: Linkify-Backend CI
 
-    on:
-      push:
-        branches: [ "main" ]
+on:
+  push:
+    branches: [ "main" ]
 
-    jobs:
-      build:
-        runs-on: self-hosted
+jobs:
+  build:
 
-        strategy:
-          matrix:
-            node-version: [23.x]
+    runs-on: self-hosted
 
-        steps:
-        - name: Backup .env
-          run: |
-            if [ -f .env ]; then mv .env /tmp/env_backup; fi
-        
-        - uses: actions/checkout@v4
-        
-        - name: Restore .env
-          run: |
-            if [ -f /tmp/env_backup ]; then mv /tmp/env_backup .env; fi
-        
-        - name: Use Node.js ${{ matrix.node-version }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: ${{ matrix.node-version }}
-            cache: 'npm'
-        
-        - run: npm ci
-        - run: npm run build --if-present
-        - run: sudo pm2 restart backend
+    strategy:
+      matrix:
+        node-version: [23.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - name: Backup .env
+      run : |
+       if [ -f .env ]; then mv .env $HOME/env_backup; fi
+    - uses: actions/checkout@v4
+    - name: Restore .env
+      run : |
+       if [ -f $HOME/env_backup ]; then mv $HOME/env_backup .env; fi
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: sudo pm2 restart backend  
+    # - run: npm test
     ```
     <br><br>
-    <img src="https://github.com/SurjeetKumar1/Apna-AI-Backend/blob/main/assets/backend-cicd-build.png" alt="CI/CD Build Workflow"/>
+    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-workflow.png" alt="CI/CD Build Workflow"/>
+    <br><br>
+
+        <br><br>
+    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-command.png" alt="Runner Setup Commands"/>
     <br><br>
 
 #### **Handling the `.env` file**
@@ -180,7 +184,7 @@ After pushing a change to the `main` branch, the GitHub Action will automaticall
 **Example Endpoint:** `https://ec2-54-210-6-159.compute-1.amazonaws.com:8080/test`
 <br><br>
 
-<img src="https://github.com/SurjeetKumar1/Apna-AI-Backend/blob/main/assets/backend-live.png" alt="Live Backend Response"/>
+<img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-output.png" alt="Live Backend Response"/>
 <br><br>
 
 ---
