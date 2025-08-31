@@ -79,9 +79,6 @@ First, create and configure the cloud server.
         sudo apt install -y nodejs npm nginx
         sudo npm install -g pm2
         ```
-        <br><br>
-    <img src="https://github.com/SurjeetKumar1/Apna-AI-Backend/blob/main/assets/connect-to-EC2.png" alt="Connecting to EC2"/>
-    <br><br>
 
 ### **2. GitHub Actions Self-Hosted Runner Setup 🏃‍♂️**
 
