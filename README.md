@@ -1,10 +1,9 @@
 # **Backend CI/CD Pipeline: AWS EC2 & GitHub Actions 🚀**
 
-<br><br>
+<br>
 <p align="center">
   <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-output.png" alt="Live API Endpoint" width="75%"/>
 </p>
-<br><br>
 
 This repository outlines the complete process for setting up an automated **CI/CD** (Continuous Integration/Continuous Deployment) pipeline for a Node.js backend. The pipeline uses **GitHub Actions** to automatically build and deploy the latest changes from the `main` branch to an **AWS EC2 instance**, where the application is managed by **PM2**.
 
@@ -57,28 +56,33 @@ First, create and configure the cloud server.
     -   **AMI:** `Ubuntu`
     -   **Instance Type:** `t2.micro` (Free Tier eligible)
     -   **Key Pair:** Create a new `.pem` key pair and download it.
+
 2.  **Security Group (Firewall):** Configure inbound rules to allow:
     -   `SSH` (Port 22) from your IP.
     -   `HTTP` (Port 80) from `Anywhere` (0.0.0.0/0).
     -   `Custom TCP` (Port 9090 or your app's port) from `Anywhere` (0.0.0.0/0).
-<br><br>
-    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/ec2-machine.png" alt="EC2 Instance Configuration"/>
-<br><br>
-<br><br>
-    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/port.png" alt="EC2 Instance Configuration"/>
-<br><br>
+
+<p align="center">
+  <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/ec2-machine.png" alt="EC2 Instance Configuration"/>
+  <br><br>
+  <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/port.png" alt="Security Group Port Configuration"/>
+</p>
+
 3.  **Connect and Prepare:**
-    -   Secure your key: `chmod 400 "linkify.pem"`
+    -   Secure your key:
+      ```bash
+      chmod 400 "linkify.pem"
+      ```
     -   SSH into your instance:
-        ```bash
-        ssh -i "linkify.pem" ubuntu@ec2-52-90-197-220.compute-1.amazonaws.com
-        ```
+      ```bash
+      ssh -i "linkify.pem" ubuntu@ec2-52-90-197-220.compute-1.amazonaws.com
+      ```
     -   Install necessary software:
-        ```bash
-        sudo apt update
-        sudo apt install -y nodejs npm nginx
-        sudo npm install -g pm2
-        ```
+      ```bash
+      sudo apt update
+      sudo apt install -y nodejs npm nginx
+      sudo npm install -g pm2
+      ```
 
 ### **2. GitHub Actions Self-Hosted Runner Setup 🏃‍♂️**
 
@@ -102,7 +106,7 @@ Connect your EC2 instance to your GitHub repository.
     tar xzf ./actions-runner-linux-x64-2.328.0.tar.gz
 
     # Configure the runner (use the URL and token from your repo's settings)
-    ./config.sh --url [https://github.com/SurjeetKumar1/Apna-AI-Backend](https://github.com/SurjeetKumar1/Linkify-Backend) --token <..........>
+    ./config.sh --url [https://github.com/SurjeetKumar1/Linkify-Backend](https://github.com/SurjeetKumar1/Linkify-Backend) --token <YOUR_RUNNER_TOKEN>
 
     # Install the runner as a service to run on startup
     sudo ./svc.sh install
@@ -110,7 +114,6 @@ Connect your EC2 instance to your GitHub repository.
     # Start the runner service
     sudo ./svc.sh start
     ```
-    
 
 ### **3. GitHub Actions Workflow Configuration ⚙️**
 
@@ -122,45 +125,43 @@ Create the automated deployment script.
     ```yaml
     name: Linkify-Backend CI
 
-on:
-  push:
-    branches: [ "main" ]
+    on:
+      push:
+        branches: [ "main" ]
 
-jobs:
-  build:
+    jobs:
+      build:
+        runs-on: self-hosted
+        strategy:
+          matrix:
+            node-version: [23.x]
 
-    runs-on: self-hosted
+        steps:
+        - name: Backup .env
+          run: |
+            if [ -f .env ]; then mv .env $HOME/env_backup; fi
 
-    strategy:
-      matrix:
-        node-version: [23.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        - uses: actions/checkout@v4
 
-    steps:
-    - name: Backup .env
-      run : |
-       if [ -f .env ]; then mv .env $HOME/env_backup; fi
-    - uses: actions/checkout@v4
-    - name: Restore .env
-      run : |
-       if [ -f $HOME/env_backup ]; then mv $HOME/env_backup .env; fi
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: sudo pm2 restart backend  
-    # - run: npm test
+        - name: Restore .env
+          run: |
+            if [ -f $HOME/env_backup ]; then mv $HOME/env_backup .env; fi
+
+        - name: Use Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@v4
+          with:
+            node-version: ${{ matrix.node-version }}
+            cache: 'npm'
+
+        - run: npm ci
+        - run: npm run build --if-present
+        - run: sudo pm2 restart backend
     ```
-    <br><br>
-    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-workflow.png" alt="CI/CD Build Workflow"/>
-    <br><br>
-
-        <br><br>
-    <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-command.png" alt="Runner Setup Commands"/>
-    <br><br>
+<p align="center">
+  <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-workflow.png" alt="CI/CD Build Workflow"/>
+  <br><br>
+  <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-command.png" alt="Runner Setup Commands"/>
+</p>
 
 #### **Handling the `.env` file**
 The workflow is designed to preserve your `.env` file on the server. You must create this file manually the first time.
@@ -179,10 +180,10 @@ The workflow is designed to preserve your `.env` file on the server. You must cr
 After pushing a change to the `main` branch, the GitHub Action will automatically trigger. You can verify a successful deployment by accessing your API endpoint.
 
 **Example Endpoint:** `https://ec2-54-210-6-159.compute-1.amazonaws.com:8080/test`
-<br><br>
 
-<img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-output.png" alt="Live Backend Response"/>
-<br><br>
+<p align="center">
+  <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-output.png" alt="Live Backend Response"/>
+</p>
 
 ---
 
