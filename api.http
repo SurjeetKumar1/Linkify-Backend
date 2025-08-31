@@ -1,0 +1,62 @@
+### Register User
+POST http://localhost:9090/register
+Content-Type: application/json
+
+{
+  "username": "surj",
+  "password": "12345",
+  "email": "sk@example.com",
+  "name": "Surjeet Kumar"
+}
+
+
+### Login User
+POST http://localhost:9090/login
+Content-Type: application/json
+
+{
+  "email": "sk@example.com",
+  "password": "12345"
+}
+
+### user_get_and_profile
+GET http://localhost:9090/user_get_and_profile
+Content-Type: application/json
+
+{
+  "token":"e53a0fade3df2967b244b422978b823d89aad744b1690f3316db4bae15db1c6e"
+}
+
+### update_profile_data
+POST http://localhost:9090/update_profile_data
+Content-Type: application/json
+
+{
+  "token": "09c0b298de947499b2214aa0958fd102b0d979ec822b593082812e8634469c20",
+  "bio": "",
+  "currPost": "CTO",
+  "pastWork": [
+    {
+      "company": "Microsoft",
+      "position": "CTO",
+      "years": "2+"
+    }
+  ],
+  "education": [
+    {
+      "school": "IIT",
+      "degree": "B.Tech",
+      "fieldOfStudy": "Computer Science",
+      "duration": "2015-2019"
+    }
+  ]
+}
+
+### get_all_user_profile
+GET http://localhost:9090/user/get_all_user_profile
+
+
+
+
+
+
