@@ -5,7 +5,7 @@ import Post from "../models/post.model.js"
 import Comment from "../models/comment.model.js"
 
 export const activeCheck=async(req,res)=>{
-    return res.send({message:"Running"})
+    return res.send({message:"Welcome to Linkify"})
 }
 
 export const createdPost=async(req,res)=>{
