@@ -179,7 +179,7 @@ The workflow is designed to preserve your `.env` file on the server. You must cr
 
 After pushing a change to the `main` branch, the GitHub Action will automatically trigger. You can verify a successful deployment by accessing your API endpoint.
 
-**Example Endpoint:** `https://ec2-54-210-6-159.compute-1.amazonaws.com:8080/test`
+**Example Endpoint:** `https://ec2-54-86-19-8.compute-1.amazonaws.com:9090/test`
 
 <p align="center">
   <img src="https://github.com/SurjeetKumar1/Linkify-Backend/blob/main/assets/backend-output.png" alt="Live Backend Response"/>
