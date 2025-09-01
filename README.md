@@ -175,6 +175,20 @@ The workflow is designed to preserve your `.env` file on the server. You must cr
 
 ---
 
+#### Start app (as ubuntu user, no sudo)
+pm2 start server.js --name backend
+
+#### Restart app
+pm2 restart backend
+
+#### See running apps
+pm2 list
+
+#### Save processes (so they survive reboot)
+pm2 save
+
+---
+
 ## **Verification ✅**
 
 After pushing a change to the `main` branch, the GitHub Action will automatically trigger. You can verify a successful deployment by accessing your API endpoint.
