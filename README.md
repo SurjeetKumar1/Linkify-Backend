@@ -1,3 +1,10 @@
+<div align="center">
+<h1 style="color: red;"><strong>NOTE: Frontend Repository</strong></h1>
+<p><strong>The Frontend code for this application is in a separate repository. You can find it here:<br><a href="https://github.com/SurjeetKumar1/Linkify-frontend">https://github.com/SurjeetKumar1/Linkify-frontend</a></strong></p>
+</div>
+
+---
+
 # **Backend CI/CD Pipeline: AWS EC2 & GitHub Actions 🚀**
 
 <br>
